@@ -1,0 +1,8 @@
+mockforge/
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   └── .env
+├── frontend/
+│   └── (vite app goes here)
+└── README.md
