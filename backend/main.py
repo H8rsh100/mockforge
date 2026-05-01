@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 import os
 import json
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
 
@@ -36,7 +36,10 @@ async def generate_questions(req: QuestionRequest):
     Return ONLY a JSON array of 5 strings, no extra text, no markdown.
     Example: ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]
     """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-1.5-flash-8b",
+        contents=prompt
+    )
     questions = json.loads(response.text.strip())
     return {"questions": questions}
 
@@ -55,7 +58,10 @@ async def evaluate_answer(req: EvaluateRequest):
         "improvement": "<what they should improve>"
     }}
     """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-1.5-flash-8b",
+        contents=prompt
+    )
     result = json.loads(response.text.strip())
     return result
 
